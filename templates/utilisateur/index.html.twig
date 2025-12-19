@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Clients{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+        }
+
+        .header {
+            background-color: #7b2cbf;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .logout:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            max-width: 960px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #7b2cbf;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #5a1a94;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        table thead {
+            background-color: #7b2cbf;
+            color: white;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            background: #dff0d8;
+            border: 1px solid #a3d29f;
+            color: #3c763d;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: #dff0d8;
+            border: 1px solid #a3d29f;
+            color: #3c763d;
+        }
+
+        .actions a {
+            color: #7b2cbf;
+            font-weight: bold;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #7b2cbf;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="header">
+        <h1>Gestion des Clients</h1>
+        {# <a class="logout" href="{{ path('app_logout') }}">Se déconnecter</a> #}
+
+
+    </div>
+
+    <div class="content">
+        {% for message in app.flashes('success') %}
+            <div class="message alert-success">{{ message }}</div>
+        {% endfor %}
+
+{#<a href="{{ path('admin_utilisateur_new') }}" class="btn">+ Ajouter un client</a>#}
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for utilisateur in listeUtilisateur %}
+                <tr>
+                    <td>{{ utilisateur.id }}</td>
+                    <td>{{ utilisateur.prenom }}</td>
+                    <td>{{ utilisateur.nom }}</td>
+                    <td>{{ utilisateur.email }}</td>
+                    <td>{{ utilisateur.role }}</td>
+                    <td class="actions">
+                        <a href="{{ path('admin_utilisateur_edit', {'id': utilisateur.id}) }}">Modifier</a>
+                       {#  <form method="post" action="{{ path('admin_utilisateur_delete', {'id': utilisateur.id}) }}" style="display:inline;" onsubmit="return confirm('Confirmer la suppression ?')">#}
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+                            <button type="submit" class="btn-delete">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun client trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {#  <a href="{{ path('admin_dashboard') }}" class="btn" style="background-color: #7b2cbf; margin-top: 20px;">Retour à l'accueil</a>#}
+    </div>
+{% endblock %}

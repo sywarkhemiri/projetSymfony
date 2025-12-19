@@ -1,0 +1,188 @@
+{# templates/admin/commande/list.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Commandes{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #7b2cbf;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .logout:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #7b2cbf;
+            margin-bottom: 30px;
+        }
+
+        .message {
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        thead {
+            background: #7b2cbf;
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .actions a {
+            color: #c0392b;
+            font-weight: bold;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .actions a.view {
+            color: #7b2cbf;
+        }
+
+        .produits {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        .produit {
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #7b2cbf;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a1a94;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="header">
+        <h1>Gestion des Commandes</h1>
+        <a class="logout" href="{{ path('app_logout') }}">Se déconnecter</a>
+    </div>
+
+    <div class="container">
+        {% for message in app.flashes('success') %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+
+        {% if commandes is empty %}
+            <div class="no-data">Aucune commande pour le moment.</div>
+        {% else %}
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Total (DT)</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for commande in commandes %}
+                    <tr>
+                        <td>{{ commande.id }}</td>
+                        <td>{{ commande.user.prenom }} {{ commande.user.nom }}</td>
+                        <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                        <td>{{ commande.total|number_format(2, ',', ' ') }}</td>
+                        <td class="actions">
+                            <a href="{{ path('admin_commande_details', {id: commande.id}) }}" class="view">Détails</a>
+                            <a href="{{ path('admin_commande_delete', {id: commande.id}) }}"
+                               onclick="return confirm('Supprimer cette commande ?')">Supprimer</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <div class="produits">
+                                <strong>Produits :</strong><br>
+                                {% for cp in commande.commandeProduits %}
+                                    <div class="produit">
+                                        - {{ cp.produit.nom }} (x{{ cp.quantite }})
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <a href="{{ path('admin_dashboard') }}" class="btn">Retour à l'accueil</a>
+    </div>
+{% endblock %}
